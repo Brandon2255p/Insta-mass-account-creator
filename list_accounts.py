@@ -2,5 +2,5 @@ from modules import list_created_account
 
 accounts = list_created_account.list_created_account()
 
-for a in accounts:
-    print("username {}\tpassword {}".format(a['username'],a['password']))
+for account in accounts:
+    print(f"username {account['username']}\tpassword {account['password']}")
