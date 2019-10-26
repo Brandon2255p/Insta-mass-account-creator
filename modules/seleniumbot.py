@@ -8,9 +8,10 @@ from random import randint
 
 import modules.config as config
 # importing generated info
-import modules.generateaccountinformation as accnt
+import modules.account as accnt
 from modules.storeusername import store
 # from .activate_account import get_activation_url
+from .mail_service import MailService
 # library import
 from selenium import webdriver
 from selenium.webdriver import ActionChains
@@ -59,6 +60,8 @@ class AccountCreator():
         action_chains = ActionChains(driver)
         account_info = accnt.new_account()
 
+        sleep(2.3)
+        
         # fill the email value
         print('Filling email field')
         email_field = driver.find_element_by_name('emailOrPhone')
@@ -67,11 +70,15 @@ class AccountCreator():
         print(account_info.email)
         email_field.send_keys(account_info.email)
 
+        sleep(1.5)
+
         # fill the fullname value
         print('Filling fullname field')
         fullname_field = driver.find_element_by_name('fullName')
         action_chains.move_to_element(fullname_field)
         fullname_field.send_keys(account_info.name)
+        
+        sleep(1)
 
         # fill username value
         print('Filling username field')
@@ -79,6 +86,7 @@ class AccountCreator():
         action_chains.move_to_element(username_field)
         username_field.send_keys(account_info.username)
 
+        sleep(2)
         # fill password value
         print('Filling password field')
         password_field = driver.find_element_by_name('password')
@@ -116,6 +124,8 @@ class AccountCreator():
             Currently buggy code.
         """
         # Activate the account
+        mail = MailService()
+        message = mail.wait_for_mail(account_info.email, 5)
         # confirm_url = get_activation_url(account_info['email'])
         # logging.info("The confirm url is {}".format(confirm_url))
         # driver.get(confirm_url)
@@ -163,8 +173,7 @@ class AccountCreator():
                             try:
                                 self.createaccount()
                             except Exception as e:
-                                print('Error!, Check its possible your ip might be banned')
-                                self.createaccount()
+                                print(f'Error!, Check its possible your ip might be banned {e}')
 
 
         except Exception as e:

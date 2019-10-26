@@ -3,7 +3,7 @@
 """
 import requests
 from modules.config import Config
-from modules.generateaccountinformation import new_account
+from modules.account import new_account
 import json
 import re
 from modules.storeusername import store
