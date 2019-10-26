@@ -42,5 +42,4 @@ class Account(object):
 
 def new_account() -> Account:
     user = User.new_random()
-    account = Account(user)
-    return account
+    return Account(user)
