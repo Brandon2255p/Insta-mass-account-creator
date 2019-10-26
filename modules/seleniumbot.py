@@ -55,53 +55,36 @@ class AccountCreator():
         driver.get(self.url)
 
         print('Browser Opened')
-        sleep(5)
-
-
-
 
         action_chains = ActionChains(driver)
-        sleep(5)
         account_info = accnt.new_account()
 
         # fill the email value
         print('Filling email field')
         email_field = driver.find_element_by_name('emailOrPhone')
         print(email_field)
-        sleep(1)
         action_chains.move_to_element(email_field)
-        print(account_info["email"])
-        email_field.send_keys(str(account_info["email"]))
-
-        sleep(2)
+        print(account_info.email)
+        email_field.send_keys(account_info.email)
 
         # fill the fullname value
         print('Filling fullname field')
         fullname_field = driver.find_element_by_name('fullName')
         action_chains.move_to_element(fullname_field)
-        fullname_field.send_keys(account_info["name"])
-
-        sleep(2)
+        fullname_field.send_keys(account_info.name)
 
         # fill username value
         print('Filling username field')
         username_field = driver.find_element_by_name('username')
         action_chains.move_to_element(username_field)
-        username_field.send_keys(account_info["username"])
-
-        sleep(2)
+        username_field.send_keys(account_info.username)
 
         # fill password value
         print('Filling password field')
         password_field = driver.find_element_by_name('password')
         action_chains.move_to_element(password_field)
-        passW = account_info["password"]
-        print(passW)
-        password_field.send_keys(str(passW))
-        sleep(1)
-
-        sleep(2)
-
+        print(account_info.password)
+        password_field.send_keys(account_info.password)
         submit = driver.find_element_by_xpath(
             '//*[@id="react-root"]/section/main/article/div[2]/div[1]/div/form/div[7]/div/button')
 
