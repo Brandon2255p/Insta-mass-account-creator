@@ -6,10 +6,9 @@ logger = logging.getLogger("getRandomIdentity")
 
 
 class User(object):
-    def __init__(self, name: str, gender: str, birthday: str):
+    def __init__(self, name: str, gender: str):
         self.name = name
         self.gender = gender
-        self.birthday = birthday
 
     @staticmethod
     def new_random():
@@ -50,8 +49,7 @@ class User(object):
             {'class': 'dl-horizontal'}
         )
 
-        birthday = all_dl[5].find("dd").contents[0]
         logger.info(
-            f"Name: {completename.contents[0]}, Gener: {gender}, Birthday: {birthday}".format(birthday))
-        user = User(completename.contents[0], gender, birthday)
+            f"Name: {completename.contents[0]}, Gener: {gender}")
+        user = User(completename.contents[0], gender)
         return user

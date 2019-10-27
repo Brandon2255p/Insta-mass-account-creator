@@ -3,25 +3,22 @@
     main function botcore
  """
 
-from time import sleep
+import logging
+import re
 from random import randint
+from time import sleep
 
-import modules.config as config
-# importing generated info
-import modules.account as accnt
-from modules.storeusername import store
-# from .activate_account import get_activation_url
-from .mail_service import MailService
-# library import
+import requests
 from selenium import webdriver
 from selenium.webdriver import ActionChains
 from selenium.webdriver.common.keys import Keys  # and Krates
-import requests
-import re
-import logging
-# from fake_useragent import UserAgent
 
-# from pymailutils import Imap
+import modules.account as accnt
+import modules.config as config
+from modules.account_persister import store
+
+from .mail_service import MailService
+
 
 class AccountCreator():
     account_created = 0
@@ -30,7 +27,6 @@ class AccountCreator():
         self.use_custom_proxy = use_custom_proxy
         self.use_local_ip_address = use_local_ip_address
         self.url = 'https://www.instagram.com/'
-        self.__collect_sockets()
 
 
     def __collect_sockets(self):
@@ -60,6 +56,7 @@ class AccountCreator():
         action_chains = ActionChains(driver)
         account_info = accnt.new_account()
 
+        logging.info(account_info)
         sleep(2.3)
         
         # fill the email value
@@ -136,6 +133,7 @@ class AccountCreator():
         try:
             if self.use_local_ip_address == False:
                 if self.use_custom_proxy == False:
+                    self.__collect_sockets()
                     for i in range(0, config.Config['amount_of_account']):
                         if len(self.sockets) > 0:
                             current_socket = self.sockets.pop(0)

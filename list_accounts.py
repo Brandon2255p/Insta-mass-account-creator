@@ -1,6 +1,7 @@
-from modules import list_created_account
+from modules.account_persister import list_created_account 
+from modules.account import Account
 
-accounts = list_created_account.list_created_account()
+accounts = list_created_account()
 
 for account in accounts:
-    print(f"username {account['username']}\tpassword {account['password']}")
+    print(f"ACCOUNT: {account}")

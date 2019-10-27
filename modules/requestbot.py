@@ -3,28 +3,27 @@
 """
 import requests
 from modules.config import Config
-from modules.account import new_account
+from modules.account import new_account, Account
 import json
 import re
-from modules.storeusername import store
-
+from modules.account_persister import store
+import logging
 
 #custom class for creating accounts
 class CreateAccount:
-    def __init__(self, email, username, password, name, numberofaccounts, use_custom_proxy, use_local_ip_address, proxy=None):
+    def __init__(self, account : Account, use_custom_proxy : bool, use_local_ip_address : bool, proxy=None):
+        self.logger = logging.getLogger("CreateAccountRequests")
         self.sockets = []
-        self.email = email
-        self.username = username
-        self.password = password
-        self.name = name
-        self.numberofaccounts = numberofaccounts
+        self.email = account.email
+        self.username = account.username
+        self.password = account.password
+        self.name = account.name
         self.use_custom_proxy = use_custom_proxy
         self.use_local_ip_address = use_local_ip_address
         self.url = "https://www.instagram.com/accounts/web_create_ajax/"
         self.referer_url = "https://www.instagram.com/"
         self.proxy = proxy
        
-        self.__collect_sockets()
 
     # A function to fetch custom proxies
     def __collect_sockets(self):
@@ -55,6 +54,7 @@ class CreateAccount:
             Check if to use local ip address to create account, then create account based on the amount set in the config.py
         """
         if self.use_local_ip_address is True:
+            self.logger.info("Using local IP")
             session = requests.Session()
             try: 
                 session_start = session.get(self.url);
@@ -64,12 +64,13 @@ class CreateAccount:
                 session.headers.update({'x-csrftoken' : session_start.cookies['csrftoken']})
                 response_text = create_request.text
                 response = json.loads(create_request.text)
-                print(response)
+                self.logger.debug(response)
             except Exception as e:
-                print(e)
-                print("---Request Bot --- An error occured while creating account with local ip address")
+                self.logger.error(e)
+                self.logger.error("---Request Bot --- An error occured while creating account with local ip address")
 
         elif self.use_custom_proxy is True:
+            self.logger.info("Using custom proxy")
             try: 
                 session = requests.Session()
                 if(self.proxy is not None):
@@ -81,20 +82,23 @@ class CreateAccount:
                         session.headers.update({'x-csrftoken' : session_start.cookies['csrftoken']})
                         response_text = create_request.text
                         response = json.loads(create_request.text)
-                        print(response)
+                        self.logger.debug(response)
                     except Exception as e:
-                        print(e)
-                        print("---Request Bot --- An error occured while creating account with custom proxy")
+                        self.logger.error(e)
+                        self.logger.error("---Request Bot --- An error occured while creating account with custom proxy")
                 else: 
                     raise Exception('---Request Bot --- Proxy must to added to proxies.txt list')
 
                 session.get(self.url)
             except Exception as e:
-                 print(e)
-                 print("---Request Bot --- An error occured while creating account with custom proxy")
+                self.logger.error(e)
+                self.logger.error("---Request Bot --- An error occured while creating account with custom proxy")
         else:
+            self.__collect_sockets()
             if len(self.sockets) > 0:
+                self.logger.info("Using proxy list")
                 current_socket = self.sockets.pop(0)
+                self.logger.info(f"Current proxy {current_socket}")
                 proxies = {"http": "http://" + current_socket, "https": "https://" + current_socket}
                 session = requests.Session()
                 try:
@@ -105,41 +109,28 @@ class CreateAccount:
                     session.headers.update({'x-csrftoken' : session_start.cookies['csrftoken']})
                     response_text = create_request.text
                     response = json.loads(create_request.text)
-                    print(response)
+                    self.logger.debug(response)
                 except Exception as e:
-                    print(e)
-                    print("---Request Bot --- An error occured while creating account with fetched proxy")
-        
-
-
-
+                    self.logger.error(e)
+                    self.logger.error("---Request Bot --- An error occured while creating account with fetched proxy")
 
 
 def runBot():
     for i in range(Config['amount_of_account']):
-       
+        account_info = new_account()
         if(Config['use_custom_proxy'] == True):
              with open(Config['proxy_file_path'], 'r') as file:
                 content = file.read().splitlines()
                 for proxy in content:
-                    account_info = new_account()
                     account = CreateAccount(
-                        account_info['email'],
-                        account_info['username'],
-                        account_info['password'],
-                        account_info['name'],
-                        Config['amount_of_account'], 
+                        account_info,
                         Config['use_custom_proxy'], 
                         Config['use_local_ip_address'],proxy=proxy)
                     account.createaccount()
         else :
-            account_info = new_account()
+            logging.info(account_info)
             account = CreateAccount(
-                account_info['email'],
-                account_info['username'],
-                account_info['password'],
-                account_info['name'],
-                Config['amount_of_account'], 
+                account_info,
                 Config['use_custom_proxy'], 
                 Config['use_local_ip_address'])
             account.createaccount()
