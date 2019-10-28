@@ -7,3 +7,6 @@ myconfig.py
 debug.log
 /env
 .env
+**/*.log
+**/*.txt
+**/*.tsv

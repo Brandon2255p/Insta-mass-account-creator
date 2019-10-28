@@ -25,12 +25,15 @@ class Account(object):
 
     @staticmethod
     def from_user(user: User):
-        self.name = user.name
-        self.username = self._username_from_name(user.name)
-        self.password = self._random_password()
-        self.email = self._email_from_username(self.username)
-        self.gender = user.gender
-    
+        username = Account._username_from_name(user.name)
+        email = Account._email_from_username(username)
+        new_acc = Account(name = user.name,
+            username = username,
+            password = Account._random_password(),
+            email = email, 
+            gender = user.gender)
+        return new_acc
+        
     @staticmethod
     def from_dictionary(user: dict):
         new_acc = Account(name = user['name'],
@@ -64,4 +67,4 @@ class Account(object):
 
 def new_account() -> Account:
     user = User.new_random()
-    return Account(user)
+    return Account.from_user(user)
