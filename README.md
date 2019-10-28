@@ -15,6 +15,9 @@ configure it to path<br>
 
 
 ## Configuration
+create .env or set environment variables:
+ - TEMPMAIL_API_KEY
+ 
 open config.py in modules
 
 | Config               | Usage                                                                                                |

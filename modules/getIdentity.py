@@ -50,6 +50,6 @@ class User(object):
         )
 
         logger.info(
-            f"Name: {completename.contents[0]}, Gener: {gender}")
+            f"Name: {completename.contents[0]}, Gender: {gender}")
         user = User(completename.contents[0], gender)
         return user

@@ -1,21 +1,24 @@
 import logging
 from shutil import copyfile
 import os
-import pickle
+import json
 from ast import literal_eval
 
 from .config import ASSET_DIR, Config
-from .account import Account
+from .account import Account, account_from_dictionary
+
+file_path = ASSET_DIR + '/usernames.txt'
 
 logging.basicConfig(level=logging.DEBUG)
 def list_created_account():
-    file_path = ASSET_DIR + '/usernames.pkl'
     does_not_exist = not os.path.exists(file_path)
     if does_not_exist:
         return []
-    with open(file_path, 'rb' ) as f:
+    with open(file_path, 'r') as file_handle:
+        f = '"' + file_handle.read() + '"'
         try:
-            accounts =  pickle.load(f)
+            accounts =  eval(json.loads(f))
+            accounts = [account_from_dictionary(acc) for acc in accounts]
             return accounts
         except EOFError:
             return []
@@ -24,11 +27,10 @@ def list_created_account():
 
 
 def store_all(accounts):
-    file_path = ASSET_DIR + '/usernames.pkl'
-    copyfile(file_path, file_path + '.bak')
-    with open(file_path, 'wb') as f:
-        pickle.dump(accounts, f, pickle.HIGHEST_PROTOCOL)
-
+    acc_model = [acc.__dict__ for acc in accounts]
+    # Saving the dictionary
+    with open(file_path, 'w') as file_handle:
+        file_handle.write(str(acc_model))
 
 def store(new_account):
     file_path = ASSET_DIR + '/usernames.pkl'
