@@ -10,3 +10,5 @@ debug.log
 **/*.log
 **/*.txt
 **/*.tsv
+.vscode
+**/*.stackdump
